@@ -1,12 +1,15 @@
 package com.codingshuttle.project.uber.uberApp.entities;
 
-import com.codingshuttle.project.uber.uberApp.enums.Role;
+import com.codingshuttle.project.uber.uberApp.entities.enums.Role;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.lang.annotation.Target;
 import java.util.Set;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "app_user")
 public class User {
     @Id
@@ -16,6 +19,7 @@ public class User {
     @Column(unique = true)
     private String email;
     private String password;
+    @ElementCollection(fetch = FetchType.LAZY)
     @Enumerated(EnumType.STRING)
     private Set<Role> roles;
 }
