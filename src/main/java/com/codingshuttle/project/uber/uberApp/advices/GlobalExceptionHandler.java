@@ -1,6 +1,7 @@
 package com.codingshuttle.project.uber.uberApp.advices;
 
 import com.codingshuttle.project.uber.uberApp.exceptions.ResourceNotFoundException;
+import com.codingshuttle.project.uber.uberApp.exceptions.RuntimeConflictException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,16 @@ public class GlobalExceptionHandler {
                 .message(exception.getMessage())
                 .build();
 
-        return buildErrorResponseEntity(apiError, HttpStatus.NOT_FOUND);
+        return buildErrorResponseEntity(apiError);
+    }
+    @ExceptionHandler(RuntimeConflictException.class)
+    public ResponseEntity<ApiResponse<?>> handleRuntimeConflictException(RuntimeConflictException exception) {
+        ApiError apiError = ApiError.builder()
+                .status(HttpStatus.CONFLICT)
+                .message(exception.getMessage())
+                .build();
+
+        return buildErrorResponseEntity(apiError);
     }
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<?>> handleException(Exception exception) {
@@ -29,7 +39,7 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .message(exception.getMessage())
                 .build();
-        return buildErrorResponseEntity(apiError, HttpStatus.INTERNAL_SERVER_ERROR);
+        return buildErrorResponseEntity(apiError);
     }
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<?>> handleInvalidMethodArguments(MethodArgumentNotValidException exception) {
@@ -44,9 +54,9 @@ public class GlobalExceptionHandler {
                 .message("Input validation failed")
                 .subErrors(subErrors)
                 .build();
-        return buildErrorResponseEntity(apiError, HttpStatus.BAD_REQUEST);
+        return buildErrorResponseEntity(apiError);
     }
-    private ResponseEntity<ApiResponse<?>> buildErrorResponseEntity(ApiError apiError, HttpStatus status) {
-        return new ResponseEntity<>(new ApiResponse<>(apiError), status);
+    private ResponseEntity<ApiResponse<?>> buildErrorResponseEntity(ApiError apiError) {
+        return new ResponseEntity<>(new ApiResponse<>(apiError), apiError.getStatus());
     }
 }
