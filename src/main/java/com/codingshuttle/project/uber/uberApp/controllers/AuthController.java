@@ -1,11 +1,9 @@
 package com.codingshuttle.project.uber.uberApp.controllers;
 
-import com.codingshuttle.project.uber.uberApp.advices.ApiResponse;
 import com.codingshuttle.project.uber.uberApp.dto.SignupDto;
 import com.codingshuttle.project.uber.uberApp.dto.UserDto;
 import com.codingshuttle.project.uber.uberApp.services.AuthService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

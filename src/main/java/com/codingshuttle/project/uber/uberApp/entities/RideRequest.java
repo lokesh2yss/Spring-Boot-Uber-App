@@ -5,7 +5,6 @@ import com.codingshuttle.project.uber.uberApp.entities.enums.RideRequestStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.geolatte.geom.crs.MeasureStraightLineAxis;
 import org.hibernate.annotations.CreationTimestamp;
 import org.locationtech.jts.geom.Point;
 

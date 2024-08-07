@@ -19,6 +19,7 @@ public class Driver {
     private Double rating;
 
     private String vehicleId;
+
     private Boolean available;
 
     @Column(columnDefinition = "Geometry(Point, 4326)")
