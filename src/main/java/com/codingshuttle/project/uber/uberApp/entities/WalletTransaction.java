@@ -27,7 +27,7 @@ public class WalletTransaction {
     @Enumerated(EnumType.STRING)
     private TransactionMethod transactionMethod;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Ride ride;
 
     private String transactionId;
