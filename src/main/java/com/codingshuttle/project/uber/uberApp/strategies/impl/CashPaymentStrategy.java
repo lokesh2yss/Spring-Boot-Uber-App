@@ -5,7 +5,6 @@ import com.codingshuttle.project.uber.uberApp.entities.Payment;
 import com.codingshuttle.project.uber.uberApp.entities.enums.PaymentStatus;
 import com.codingshuttle.project.uber.uberApp.entities.enums.TransactionMethod;
 import com.codingshuttle.project.uber.uberApp.repositories.PaymentRepository;
-import com.codingshuttle.project.uber.uberApp.services.PaymentService;
 import com.codingshuttle.project.uber.uberApp.services.WalletService;
 import com.codingshuttle.project.uber.uberApp.strategies.PaymentStrategy;
 import lombok.RequiredArgsConstructor;
