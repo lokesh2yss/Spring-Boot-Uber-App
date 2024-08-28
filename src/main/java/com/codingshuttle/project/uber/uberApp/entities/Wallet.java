@@ -13,6 +13,9 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(indexes = {
+        @Index(name = "idx_wallet_user", columnList = "user_id")
+})
 public class Wallet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

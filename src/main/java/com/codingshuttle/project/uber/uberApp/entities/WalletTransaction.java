@@ -14,6 +14,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(indexes = {
+        @Index(name = "idx_wallet_transaction_ride", columnList = "ride_id"),
+        @Index(name = "idx_wallet_transaction_wallet", columnList = "wallet_id")
+})
 public class WalletTransaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,7 +31,7 @@ public class WalletTransaction {
     @Enumerated(EnumType.STRING)
     private TransactionMethod transactionMethod;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Ride ride;
 
     private String transactionId;
