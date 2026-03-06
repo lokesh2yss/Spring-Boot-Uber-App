@@ -1,12 +1,26 @@
 ---
 
-# Uber Backend Clone – Spring Boot
+# Uber Backend System – Spring Boot
 
-A backend system that simulates the core functionality of a ride-hailing platform similar to Uber.
+Java | Spring Boot | PostgreSQL | PostGIS | JWT | System Design
 
-This project demonstrates how backend services interact to support ride booking, driver matching, trip lifecycle management, authentication, and wallet operations using **Java and Spring Boot**.
+A backend system that simulates the core functionality of a ride-hailing platform similar to **Uber**.
 
-The system focuses on backend architecture design, API development, and domain modeling for a ride-sharing platform.
+---
+
+# System Design Summary
+
+This project demonstrates the backend architecture of a ride-hailing platform similar to Uber.
+
+Key architectural characteristics:
+
+* Backend services implemented using **Spring Boot**
+* **Strategy pattern** used for driver matching and fare calculation
+* **PostgreSQL + PostGIS** used for geospatial driver search
+* **JWT-based authentication and authorization**
+* Modular domain services for riders, drivers, rides, and payments
+
+The system models the complete ride lifecycle including ride requests, driver matching, trip execution, and payment handling.
 
 ---
 
@@ -116,9 +130,7 @@ Major domain services:
 
 # Architecture Diagram
 
-```
-uber-system-architecture.png
-```
+The following diagram illustrates the service interactions during the ride booking workflow.
 
 ![Uber Architecture](uber-system-architecture.png)
 
