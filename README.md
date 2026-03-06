@@ -4,19 +4,60 @@
 
 A backend system that simulates the core functionality of a ride-hailing platform similar to Uber.
 
-This project focuses on **backend system design and REST API development** using Spring Boot. It demonstrates ride lifecycle management, driver availability handling, and database persistence for a ride booking system.
+This project demonstrates how backend services interact to support ride booking, driver matching, trip lifecycle management, authentication, and wallet operations using **Java and Spring Boot**.
+
+The system focuses on backend architecture design, API development, and domain modeling for a ride-sharing platform.
+
+---
+
+# Application Overview
+
+The system enables riders to request rides and drivers to accept and complete trips.
+
+Core capabilities include:
+
+* rider ride requests
+* driver matching
+* ride lifecycle management
+* fare calculation
+* wallet and payment handling
+* driver and rider ratings
+* JWT-based authentication and authorization
+
+The backend is organized into domain services responsible for riders, drivers, rides, and user authentication.
 
 ---
 
 # Features
 
-* Rider ride request workflow
-* Driver availability management
-* Trip lifecycle management
-* Driver–rider matching logic
-* RESTful API design
-* PostgreSQL persistence layer
-* Layered backend architecture
+### Rider
+
+* request ride
+* cancel ride
+* rate driver
+* view ride history
+* add funds to wallet
+
+### Driver
+
+* accept ride
+* start ride
+* end ride
+* cancel ride
+* rate rider
+* view ride history
+
+### Admin
+
+* onboard drivers
+* view system rides
+
+### System
+
+* driver matching
+* fare calculation
+* ride lifecycle management
+* location updates
 
 ---
 
@@ -27,90 +68,136 @@ This project focuses on **backend system design and REST API development** using
 * Java
 * Spring Boot
 * Spring Data JPA
+* Spring Security
 * REST APIs
+
+### Authentication
+
+* JWT Token Authentication
+* Role-based Authorization
 
 ### Database
 
 * PostgreSQL
+* PostGIS extension (for geospatial queries)
 
-### Build Tool
+### Tools
 
 * Maven
+* Swagger UI
 
 ---
 
 # System Architecture
 
-The application follows a **layered architecture pattern**.
+The backend follows a **layered architecture**:
 
 ```
-Client
-  |
 Controller Layer
-  |
+        ↓
 Service Layer
-  |
+        ↓
 Repository Layer
-  |
-PostgreSQL Database
+        ↓
+PostgreSQL + PostGIS
 ```
 
-### Layer Responsibilities
+Major domain services:
 
-**Controller Layer**
-
-* Handles incoming HTTP requests
-* Validates request payload
-* Delegates logic to service layer
-
-**Service Layer**
-
-* Contains core business logic
-* Handles ride lifecycle management
-* Manages driver matching logic
-
-**Repository Layer**
-
-* Handles database operations
-* Uses Spring Data JPA for persistence
+* **UserService** – authentication and user management
+* **RiderService** – rider operations
+* **DriverService** – driver operations
+* **RideRequestService** – ride request handling
+* **Ride** – ride lifecycle management
+* **Wallet** – payment handling
+* **Rating** – driver/rider ratings
 
 ---
 
 # Architecture Diagram
 
-GitHub automatically renders the diagram below.
-
-```mermaid
-graph TD
-
-Client --> RideController
-RideController --> RideService
-RideService --> DriverService
-RideService --> RideRepository
-DriverService --> DriverRepository
-RideRepository --> PostgreSQL
-DriverRepository --> PostgreSQL
 ```
+uber-system-architecture.png
+```
+
+![Uber Architecture](uber-system-architecture.png)
+
+---
+
+# Ride Booking Workflow
+
+### Step 1 — Rider requests ride
+
+```
+POST /requestRide
+```
+
+Request contains:
+
+* riderId
+* pickup location
+* destination location
+
+The request is received by **RiderService** and forwarded to **RideRequestService**.
+
+---
+
+### Step 2 — Fare calculation
+
+The fare is calculated using the **Strategy Pattern**.
+
+Available strategies:
+
+* DefaultFareStrategy
+* SurgePricingFareStrategy
+
+```
+RideRequestService
+      ↓
+calculateFare()
+      ↓
+CalculateFareStrategy
+```
+
+---
+
+### Step 3 — Driver matching
+
+The system selects the most suitable driver using **DriverMatchingStrategy**.
+
+Matching may consider:
+
+* driver proximity
+* driver rating
+* driver availability
+
+Distance calculations may use:
+
+* PostGIS geospatial queries
+* OSRM distance API
+
+Possible strategies:
+
+* NearestDriverStrategy
+* RatingBasedStrategy
+
+---
+
+### Step 4 — Driver accepts ride
+
+Once drivers are notified, a driver can accept the ride.
+
+```
+POST /acceptRide
+```
+
+DriverService processes the request and updates ride status.
 
 ---
 
 # Ride Lifecycle
 
-Typical ride workflow:
-
-```
-Rider requests ride
-        |
-Find available driver
-        |
-Driver accepts ride
-        |
-Trip starts
-        |
-Trip ends
-```
-
-Example ride states:
+The ride progresses through the following states:
 
 ```
 REQUESTED
@@ -120,57 +207,57 @@ COMPLETED
 CANCELLED
 ```
 
----
-
-# Example APIs
-
-### Request Ride
+Driver APIs controlling the lifecycle:
 
 ```
-POST /rides/request
-```
-
-Example request body
-
-```json
-{
-  "riderId": 10,
-  "pickupLocation": "Location A",
-  "destination": "Location B"
-}
+POST /startRide
+POST /endRide
+POST /cancelRide
 ```
 
 ---
 
-### Update Driver Availability
+# Authentication & Authorization
+
+The system uses **JWT-based authentication**.
+
+User authentication endpoints:
 
 ```
-POST /drivers/availability
+POST /signup
+POST /login
 ```
 
-Updates driver availability status.
+After login:
+
+* server issues **JWT token**
+* token must be included in request headers
+
+Example:
+
+```
+Authorization: Bearer <JWT_TOKEN>
+```
+
+Role-based access control ensures:
+
+* riders access rider APIs
+* drivers access driver APIs
+* admins access admin APIs
 
 ---
 
-### Get Ride Details
+# Core Entities
+
+Main domain entities:
 
 ```
-GET /rides/{rideId}
-```
-
-Returns ride details including trip status.
-
----
-
-# Database Design
-
-Core entities used in the system:
-
-```
-Driver
+User
 Rider
+Driver
 Ride
-Location
+Wallet
+Rating
 ```
 
 Relationships:
@@ -181,11 +268,39 @@ Driver → Ride
 Ride → Location
 ```
 
-PostgreSQL is used as the persistence layer.
+PostGIS enables geospatial operations such as **nearest driver search**.
 
 ---
 
-# How to Run
+# Design Patterns Used
+
+The system uses several object-oriented design patterns:
+
+* Strategy Pattern
+* Builder Pattern
+* Factory Pattern
+* Singleton Pattern
+
+Strategy Pattern is used for:
+
+* driver matching
+* fare calculation
+
+---
+
+# Additional Components
+
+Other infrastructure features include:
+
+* Swagger API documentation
+* GlobalExceptionHandler
+* GlobalResponseHandler
+* DEV and PROD profiles
+* email notifications
+
+---
+
+# Running the Project
 
 Clone the repository
 
@@ -209,38 +324,26 @@ Ensure PostgreSQL is running and configured in `application.properties`.
 
 ---
 
-# Possible Future Improvements
+# Future Improvements
 
-* Add Redis caching for faster driver lookup
-* Introduce Kafka for event-driven architecture
-* Implement real-time driver location updates
-* Add rate limiting for ride requests
-* Containerize services using Docker
-* Introduce microservices architecture
+Possible enhancements:
 
----
-
-# Purpose of the Project
-
-This project was created to explore backend system design concepts including:
-
-* REST API design
-* scalable backend architecture
-* ride lifecycle modeling
-* database schema design
-* production-style backend service structure
+* Redis caching for driver lookup
+* Kafka event-driven architecture
+* real-time driver location tracking
+* distributed ride matching
+* microservice architecture
+* Docker deployment
 
 ---
 
 # Author
 
 Lokesh Kumar
-
 Senior Backend Engineer
 Java | Spring Boot | Distributed Systems
 
-LeetCode Profile
+LeetCode
 [https://leetcode.com/u/lokeshtalks/](https://leetcode.com/u/lokeshtalks/)
 
 ---
-
